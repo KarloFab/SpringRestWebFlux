@@ -2,15 +2,14 @@ package com.karlo.springrestwebflux.controller;
 
 import com.karlo.springrestwebflux.domain.Category;
 import com.karlo.springrestwebflux.repository.CategoryRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.reactivestreams.Publisher;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/categories")
 public class CategoryController {
 
     private final CategoryRepository categoryRepository;
@@ -19,13 +18,19 @@ public class CategoryController {
         this.categoryRepository = categoryRepository;
     }
 
-    @GetMapping("/categories")
+    @GetMapping
     Flux<Category> getAll(){
         return categoryRepository.findAll();
     }
 
-    @GetMapping("/categories/{id}")
+    @GetMapping("{id}")
     Mono<Category> getById(@PathVariable String id){
         return categoryRepository.findById(id);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping
+    Mono<Void> create(@RequestBody Publisher<Category> categoryPublisher){
+        return categoryRepository.saveAll(categoryPublisher).then();
     }
 }

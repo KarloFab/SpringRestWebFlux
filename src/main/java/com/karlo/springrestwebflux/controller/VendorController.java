@@ -11,7 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/vendors")
 public class VendorController {
 
     private VendorRepository vendorRepository;
@@ -20,12 +20,12 @@ public class VendorController {
         this.vendorRepository = vendorRepository;
     }
 
-    @GetMapping("/vendors")
+    @GetMapping
     Flux<Vendor> getAll(){
         return vendorRepository.findAll();
     }
 
-    @GetMapping("/vendors/{id}")
+    @GetMapping("{id}")
     Mono<Vendor> getById(@PathVariable String id){
         return vendorRepository.findById(id);
     }
