@@ -34,4 +34,11 @@ public class VendorController {
     Mono<Void> create(@RequestBody Publisher<Vendor> vendorPublisher){
         return vendorRepository.saveAll(vendorPublisher).then();
     }
+
+    @PutMapping("{id}")
+    Mono<Vendor> update(@PathVariable  String id,@RequestBody Vendor vendor){
+        vendor.setId(id);
+        return vendorRepository.save(vendor);
+
+    }
 }
