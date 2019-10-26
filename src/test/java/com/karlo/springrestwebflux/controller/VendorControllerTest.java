@@ -5,6 +5,7 @@ import com.karlo.springrestwebflux.repository.VendorRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -13,6 +14,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyVararg;
 
 
 @ExtendWith(SpringExtension.class)
@@ -49,5 +53,20 @@ class VendorControllerTest {
                 .exchange()
                 .expectBodyList(Vendor.class)
                 .hasSize(1);
+    }
+
+    @Test
+    void create() {
+        BDDMockito.given(vendorRepository.saveAll(any(Publisher.class)))
+                .willReturn(Flux.just(Vendor.builder().build()));
+
+        Mono<Vendor> vendorMono = Mono.just(Vendor.builder().firstName("Vendor").lastName("VendorLast").build());
+
+        webTestClient.post()
+                .uri("/api/v1/vendors")
+                .body(vendorMono, Vendor.class)
+                .exchange()
+                .expectStatus()
+                .isCreated();
     }
 }
