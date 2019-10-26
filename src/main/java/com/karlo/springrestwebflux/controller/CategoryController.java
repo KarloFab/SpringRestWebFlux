@@ -19,37 +19,35 @@ public class CategoryController {
     }
 
     @GetMapping
-    Flux<Category> getAll(){
+    Flux<Category> getAll() {
         return categoryRepository.findAll();
     }
 
     @GetMapping("{id}")
-    Mono<Category> getById(@PathVariable String id){
+    Mono<Category> getById(@PathVariable String id) {
         return categoryRepository.findById(id);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    Mono<Void> create(@RequestBody Publisher<Category> categoryPublisher){
+    Mono<Void> create(@RequestBody Publisher<Category> categoryPublisher) {
         return categoryRepository.saveAll(categoryPublisher).then();
     }
 
     @PutMapping("{id}")
-    Mono<Category> update(@PathVariable  String id,@RequestBody Category category){
+    Mono<Category> update(@PathVariable String id, @RequestBody Category category) {
         category.setId(id);
         return categoryRepository.save(category);
     }
 
     @PatchMapping("{id}")
-    Mono<Category> patch(@PathVariable  String id,@RequestBody Category category){
-
+    Mono<Category> patch(@PathVariable String id, @RequestBody Category category) {
         Category foundCategory = categoryRepository.findById(id).block();
 
-        if(!foundCategory.getDescription().equals(category.getDescription())){
+        if (!foundCategory.getDescription().equals(category.getDescription())) {
             foundCategory.setDescription(category.getDescription());
             return categoryRepository.save(foundCategory);
         }
-
         return Mono.just(foundCategory);
     }
 }
